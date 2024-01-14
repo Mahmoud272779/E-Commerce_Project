@@ -1,4 +1,5 @@
 const { categoryModel } = require("../models/categoryModel");
+const ApiError=require('../utils/apiError');
 const slugify = require("slugify");
 const asyncHandler = require("express-async-handler"); // Replace with the actual library you're using
 
@@ -23,22 +24,21 @@ exports.creatCategory = asyncHandler(async (req, res) => {
   res.status(201).json({ data: category });
 });
 
-exports.getCategory = asyncHandler(async (req, res) => {
+exports.getCategory = asyncHandler(async (req, res,next) => {
   const  id = req.params.id;
   console.log(`id: ${id}`);
   const category = await categoryModel.findById(id);
 
   if(!category)
   {
-   return res.status(404).json({Error_msg:"this category is not found"});
+   return next( new ApiError(`can't find category with id: ${id}.`,404));
   }
 
   return res.status(200).json({ data: category });
 });
 
 
-
-exports.updateCategory = asyncHandler(async (req, res) => {
+exports.updateCategory = asyncHandler(async (req, res,next) => {
   const  id = req.params.id;
   const  name = req.body.name;
   console.log(`id: ${id}`);
@@ -46,7 +46,7 @@ exports.updateCategory = asyncHandler(async (req, res) => {
 
   if(!category)
   {
-   return res.status(404).json({Error_msg:"this category is not found"});
+    return next( new ApiError(`can/'t find category with id: ${id}.`,404));
   }
 
 
@@ -54,7 +54,7 @@ exports.updateCategory = asyncHandler(async (req, res) => {
 });
 
 
-exports.deleteCategory = asyncHandler(async (req, res) => {
+exports.deleteCategory = asyncHandler(async (req, res,next) => {
   const  id = req.params.id;
   
   console.log(`id: ${id}`);
@@ -62,7 +62,7 @@ exports.deleteCategory = asyncHandler(async (req, res) => {
 
   if(!category)
   {
-   return res.status(404).json({Error_msg:`this category with id = ${id} is not found`});
+    return next( new ApiError(`can/'t find category with id: ${id}.`,404));
   }
 
 

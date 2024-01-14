@@ -1,5 +1,6 @@
 
 const express=require('express');
+const {getCategoryValidotor}=require('../utils/validators/categoryValidator');
 const router=express.Router();
 const {getCategories,creatCategory,getCategory,updateCategory,deleteCategory}=require('../services/categoryService');
 
@@ -8,7 +9,7 @@ const {getCategories,creatCategory,getCategory,updateCategory,deleteCategory}=re
 
 
 router.route('/').post(creatCategory).get(getCategories);
-router.route('/:id').get(getCategory).put(updateCategory).delete(deleteCategory);
+router.route('/:id').get(getCategoryValidotor,getCategory).put(updateCategory).delete(deleteCategory);
 
 
 module.exports={router};

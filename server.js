@@ -1,6 +1,7 @@
 const dbConnection=require('./config/database');
 const apiError=require('./utils/apiError');
 const express=require('express');
+const globalError=require('./Middlewares/errorMiddleware');
 const app=express();
 app.use(express.json());
 const dotenv=require('dotenv');
@@ -34,19 +35,7 @@ app.all('*',(req,res,next)=>{
 })
 
 
-app.use((err,req,res,next)=>{
-    err.statuscode= err.statuscode || 500;
-    err.status=err.status || 'error';
-
-    res.status(err.statuscode).json({
-
-        status: err.status,
-        err:err,
-        msg:err.message,
-        stack: err.stack
-
-    });
-});
+app.use(globalError);
 
 
 
@@ -54,6 +43,16 @@ app.use((err,req,res,next)=>{
 
 
 
-app.listen(process.env.PORT,()=>{
+const server= app.listen(process.env.PORT,()=>{
     console.log('Server is Listening .....');
 });
+
+
+// Handling rejections outside express like dbconnection
+process.on('unhandledRejection',(err)=>{
+    console.error(`Unhandled Recjection Error: ${err.name} | ${err.message}`);
+    server.close(()=>{
+        console.error('Sjutting down .....');
+        process.exit(1);
+    });
+}); 
