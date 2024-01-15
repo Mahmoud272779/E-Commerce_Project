@@ -1,15 +1,19 @@
 
 const express=require('express');
-const {getCategoryValidotor}=require('../utils/validators/categoryValidator');
-const router=express.Router();
+const {getCategoryValidotor,createCategoryValidotor,updateCategoryValidotor,deleteCategoryValidotor}=require('../utils/validators/categoryValidator');
+
+const categoryRouter=express.Router();
 const {getCategories,creatCategory,getCategory,updateCategory,deleteCategory}=require('../services/categoryService');
 
 
 
 
 
-router.route('/').post(creatCategory).get(getCategories);
-router.route('/:id').get(getCategoryValidotor,getCategory).put(updateCategory).delete(deleteCategory);
+categoryRouter.route('/').post(createCategoryValidotor,creatCategory)
+.get(getCategories);
+categoryRouter.route('/:id').get(getCategoryValidotor,getCategory)
+.put(updateCategoryValidotor,updateCategory)
+.delete(deleteCategoryValidotor,deleteCategory);
 
 
-module.exports={router};
+module.exports={categoryRouter};
