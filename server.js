@@ -9,6 +9,7 @@ app.use(express.json());
 const dotenv = require("dotenv");
 const { categoryRouter } = require("./routes/categoryRoute");
 const {subCategoryRouter}= require("./routes/subCategoryRoute");
+const {BrandRouter} = require("./routes/brandRoute");
 
 const morgan = require("morgan");
 
@@ -21,6 +22,7 @@ if (process.env.NODE_ENV === "development") {
 
 app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/subcategories", subCategoryRouter);
+app.use("/api/v1/brands", BrandRouter);
 
 app.all("*", (req, res, next) => {
   next(new apiError(`Cant handle: ${req.originalUrl}`, 400));
