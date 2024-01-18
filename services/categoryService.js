@@ -1,7 +1,7 @@
-const { categoryModel } = require("../models/categoryModel");
-const ApiError = require("../utils/apiError");
 const slugify = require("slugify");
 const asyncHandler = require("express-async-handler"); // Replace with the actual library you're using
+const { categoryModel } = require("../models/categoryModel");
+const ApiError = require("../utils/apiError");
 
 exports.getCategories = asyncHandler(async (req, res) => {
   const { page } = req.query;

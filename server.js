@@ -6,11 +6,14 @@ const globalError = require("./Middlewares/errorMiddleware");
 
 const app = express();
 app.use(express.json());
+// eslint-disable-next-line import/order
 const dotenv = require("dotenv");
 const { categoryRouter } = require("./routes/categoryRoute");
-const {subCategoryRouter}= require("./routes/subCategoryRoute");
-const {BrandRouter} = require("./routes/brandRoute");
+const { subCategoryRouter } = require("./routes/subCategoryRoute");
+const { BrandRouter } = require("./routes/brandRoute");
+const { productRouter } = require("./routes/productRoute");
 
+// eslint-disable-next-line import/order
 const morgan = require("morgan");
 
 dotenv.config({ path: "config.env" });
@@ -23,12 +26,14 @@ if (process.env.NODE_ENV === "development") {
 app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/subcategories", subCategoryRouter);
 app.use("/api/v1/brands", BrandRouter);
+app.use("/api/v1/products", productRouter);
 
 app.all("*", (req, res, next) => {
   next(new apiError(`Cant handle: ${req.originalUrl}`, 400));
 });
 
 app.use(globalError);
+//dfg
 
 const server = app.listen(process.env.PORT, () => {
   console.log("Server is Listening .....");
