@@ -2,6 +2,7 @@ const { check } = require("express-validator");
 const validatorMiddleware = require("../../Middlewares/validationMiddleware");
 
 const { categoryModel } = require("../../models/categoryModel");
+const { subCategoryModel } = require("../../models/subCategoryModel");
 const ApiError = require("../apiError");
 
 exports.createProductValidotor = [
@@ -64,17 +65,46 @@ exports.createProductValidotor = [
     .withMessage("Product must be belong to a category")
     .isMongoId()
     .withMessage("Invalid ID formate")
-    .custom((val) => {
+    .custom((val) =>
       categoryModel.findById(val).then((c) => {
-        if (!c)
-          return new Error(`No category for this id: ${val}`,404);
-      });
-    }),
+        if (!c) {
+          throw new Error(`No category for this id: ${val}`);
+        }
+        return true;
+      })
+    ),
 
   check("subcategories")
     .optional()
     .isMongoId()
-    .withMessage("Invalid ID formate"),
+    .withMessage("Invalid ID formate")
+    .custom((subcats) =>
+      subCategoryModel
+        .find({ _id: { $exists: true, $in: subcats } })
+        .then((results) => {
+          if (results.length !== subcats.length) {
+            throw new Error("Invalid subcategories IDs");
+          }
+          return true;
+        })
+    )
+    .custom((val, { req }) =>
+      subCategoryModel
+        .find({ category: req.body.category })
+        .then((subcategories) => {
+          const subCategoriesIdsInDB = [];
+          subcategories.forEach((subCategory) => {
+            subCategoriesIdsInDB.push(subCategory._id.toString());
+          });
+          // check if subcategories ids in db include subcategories in req.body (true)
+          const checker = (target, arr) => target.every((v) => arr.includes(v));
+          if (!checker(val, subCategoriesIdsInDB)) {
+            return Promise.reject(
+              new Error(`subcategories not belong to category`)
+            );
+          }
+        })
+    ),
 
   check("brand").optional().isMongoId().withMessage("Invalid ID formate"),
 

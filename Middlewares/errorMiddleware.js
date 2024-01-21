@@ -11,7 +11,6 @@ const globalError = (err, req, res, next) => {
     stack: err.stack,
   });
 
-  else
   return res.status(err.statuscode).json({
     status: err.status,
     
