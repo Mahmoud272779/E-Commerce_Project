@@ -1,4 +1,5 @@
 for the first time ---> npm istall for installing all packages
                         npm start
 
-                        
+               probablyUsed --->npm install -g nodemon 
+                                nodemon server.js
