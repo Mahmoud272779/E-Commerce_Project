@@ -4,16 +4,32 @@ const productModel = require("../models/productModel");
 const ApiError = require("../utils/apiError");
 
 exports.getProducts = asyncHandler(async (req, res) => {
+const queryStringObj={...req.query}; // {... req.query} --> shallow copy not to affect the ref req.query
+const excludedFielded=['page','sort','limit','fields'];
+excludedFielded.forEach((f)=>delete queryStringObj[f]);
+
+const queryString=JSON.stringify(queryStringObj);
+const queryStringRE=queryString.replace(/\b(gte|gt|lte|lt)\b/g,(match)=>`$${match}`);
+
   const { page } = req.query;
   const { pagelimit } = req.query;
 
-  const allProducts = await productModel.module
-    .find({})
+
+  //Build the query --> without await
+  const mongooseQuery =  productModel.module
+    .find(JSON.parse(queryStringRE))
     .skip((page - 1) * pagelimit)
     .limit(pagelimit)
     .populate({ path: "category", select: "name -_id" });
+
+
+  //Execute Query --> using await
+    const allProducts=await mongooseQuery;
+
   res.status(201).json({ dataCount: allProducts.length, data: allProducts });
 });
+
+
 
 exports.creatProduct = asyncHandler(async (req, res) => {
   console.log("---------------");

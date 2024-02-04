@@ -12,10 +12,10 @@ exports.getCategories = asyncHandler(async (req, res) => {
     .skip((page - 1) * pagelimit)
     .limit(pagelimit);
   res
+
     .status(201)
     .json({ dataCount: allCategories.length, data: allCategories });
 });
-
 exports.creatCategory = asyncHandler(async (req, res) => {
   const { name } = req.body;
   console.log(`name: ${name}`);

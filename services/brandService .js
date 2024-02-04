@@ -51,6 +51,7 @@ exports.updateBrand = asyncHandler(async (req, res, next) => {
   return res.status(200).json({ data: brand });
 });
 
+
 exports.deleteBrand = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
 
