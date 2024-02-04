@@ -7,7 +7,6 @@ const {
 } = require("../utils/validators/brandValidator");
 
 const BrandRouter = express.Router();
-
 const {
   getBrands,
   creatBrand,

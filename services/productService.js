@@ -15,13 +15,71 @@ const queryStringRE=queryString.replace(/\b(gte|gt|lte|lt)\b/g,(match)=>`$${matc
   const { pagelimit } = req.query;
 
 
+
   //Build the query --> without await
-  const mongooseQuery =  productModel.module
+  let mongooseQuery =  productModel.module
     .find(JSON.parse(queryStringRE))
     .skip((page - 1) * pagelimit)
     .limit(pagelimit)
     .populate({ path: "category", select: "name -_id" });
 
+
+
+    //sorting
+    if(req.query.sort)
+    {
+      const sortBy=req.query.sort.split(',').join(' ');
+      mongooseQuery=mongooseQuery.sort(sortBy);
+    }
+
+    else
+    {
+      mongooseQuery=mongooseQuery.sort("-createdAt");
+
+    }
+
+
+    //selecting certain elements/fields from the response
+    if(req.query.fields)
+    {
+    let fields=req.query.fields.split(',').join(' ');
+    mongooseQuery=mongooseQuery.select(fields);
+    }
+
+    else
+    {
+      mongooseQuery=mongooseQuery.select("-__v");
+    }
+
+
+    //searching
+    if (req.query.keyword) {
+      const keyword = req.query.keyword
+  ? {
+      $or: [
+        {
+          title: {
+            $regex: req.query.keyword,
+            $options: 'i',
+          },
+        },
+        {
+          description: {
+            $regex: req.query.keyword,
+            $options: 'i',
+          },
+        },
+      ],
+    }
+  : {}
+    
+  console.log(keyword);
+      mongooseQuery = mongooseQuery.find({...keyword} );
+    }
+    
+    
+    
+    
 
   //Execute Query --> using await
     const allProducts=await mongooseQuery;
